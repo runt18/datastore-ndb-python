@@ -176,11 +176,11 @@ class HomePage(webapp.RequestHandler):
           yield summary.put_async()
       hover = ''
       if summary.title:
-        hover = ' title="%s"' % summary.title
+        hover = ' title="{0!s}"'.format(summary.title)
       escbody = (cgi.escape(pre) +
-                 '<a%s href="%s">' % (hover, cgi.escape(url)) +
+                 '<a{0!s} href="{1!s}">'.format(hover, cgi.escape(url)) +
                  cgi.escape(url) + '</a>' + cgi.escape(post))
-    text = '%s - %s - %s<br>' % (cgi.escape(nickname),
+    text = '{0!s} - {1!s} - {2!s}<br>'.format(cgi.escape(nickname),
                                  time.ctime(message.when or 0),
                                  escbody)
     if message.when is None:

@@ -65,7 +65,7 @@ def main():
     except Exception:
       pass
   prof = cProfile.Profile()
-  prof = prof.runctx('bench(%d)' % n, globals(), locals())
+  prof = prof.runctx('bench({0:d})'.format(n), globals(), locals())
   stats = pstats.Stats(prof)
   stats.strip_dirs()
   stats.sort_stats('time')  # 'time', 'cumulative' or 'calls'

@@ -86,8 +86,7 @@ class FiboHandler(webapp.RequestHandler):
       memo_type = ''
       ans = yield fibonacci(num)
     t1 = time.time()
-    self.response.out.write('%sfibonacci(%d) == %d # computed in %.3f\n' %
-                            (memo_type, num, ans, t1 - t0))
+    self.response.out.write('{0!s}fibonacci({1:d}) == {2:d} # computed in {3:.3f}\n'.format(memo_type, num, ans, t1 - t0))
 
 
 urls = [

@@ -599,7 +599,7 @@ class ContextTestMixin(object):
   def testUrlFetch(self):
     self.testbed.init_urlfetch_stub()
     host, port = self.start_test_server()
-    fut = self.ctx.urlfetch('http://%s:%d' % (host, port))
+    fut = self.ctx.urlfetch('http://{0!s}:{1:d}'.format(host, port))
     result = fut.get_result()
     self.assertEqual(result.status_code, 200)
     self.assertTrue(isinstance(result.content, str))
@@ -881,7 +881,7 @@ class ContextMemcacheTestMixin(object):
     get_fut = self.ctx.get(key)
     ent = get_fut.get_result()
     self.assertTrue(ent is not None,
-                    'Memcache delete did block memcache set %r' % ent)
+                    'Memcache delete did block memcache set {0!r}'.format(ent))
 
   def testMemcacheAPI(self):
     self.ExpectErrors()
@@ -1068,7 +1068,7 @@ class ContextMemcacheTestMixin(object):
     ks = self.ctx._memcache_prefix + k.urlsafe()
     v = memcache.get(ks)
     self.assertTrue(isinstance(v, str),
-                    'Expected instanceof "str", got "%s"' % type(v))
+                    'Expected instanceof "str", got "{0!s}"'.format(type(v)))
 
   def testCorruptMemcache(self):
     # Check that corrupt memcache entries silently fail.

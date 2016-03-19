@@ -42,19 +42,19 @@ class MainPage(webapp.RequestHandler):
     greetings = Greeting.QueryBook(ancestor_key)
 
     for greeting in greetings:
-      self.response.out.write('<blockquote>%s</blockquote>' %
-                              cgi.escape(greeting.content))
+      self.response.out.write('<blockquote>{0!s}</blockquote>'.format(
+                              cgi.escape(greeting.content)))
 
     self.response.out.write("""
-          <form action="/sign?%s" method="post">
+          <form action="/sign?{0!s}" method="post">
             <div><textarea name="content" rows="3" cols="60"></textarea></div>
             <div><input type="submit" value="Sign Guestbook"></div>
           </form>
           <hr>
-          <form>Guestbook name: <input value="%s" name="guestbook_name">
+          <form>Guestbook name: <input value="{1!s}" name="guestbook_name">
           <input type="submit" value="switch"></form>
         </body>
-      </html>""" % (urllib.urlencode({'guestbook_name': guestbook_name}),
+      </html>""".format(urllib.urlencode({'guestbook_name': guestbook_name}),
                     cgi.escape(guestbook_name)))
 
 

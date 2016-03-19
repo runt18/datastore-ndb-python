@@ -41,10 +41,10 @@ def shell():
   project_id = id_resolver.resolve_project_id(application_id)
 
   banner = """ndb shell
-  Python %s
-  Project: %s
+  Python {0!s}
+  Project: {1!s}
   The ndb module is already imported.
-  """ % (sys.version, project_id)
+  """.format(sys.version, project_id)
 
   imports = {
     'ndb': ndb,
@@ -53,7 +53,7 @@ def shell():
   # set up the environment
   os.environ['SERVER_SOFTWARE'] = 'Development (ndb_shell)/0.1'
 
-  sys.ps1 = '%s> ' % project_id
+  sys.ps1 = '{0!s}> '.format(project_id)
   if readline is not None:
     # set up readline
     readline.parse_and_bind('tab: complete')

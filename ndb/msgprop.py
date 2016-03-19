@@ -186,8 +186,7 @@ class EnumProperty(model.IntegerProperty):
       TypeError if the value is not an instance of self._enum_type.
     """
     if not isinstance(value, self._enum_type):
-      raise TypeError('Expected a %s instance, got %r instead' %
-                      (self._enum_type.__name__, value))
+      raise TypeError('Expected a {0!s} instance, got {1!r} instead'.format(self._enum_type.__name__, value))
 
   def _to_base_type(self, enum):
     """Convert an Enum value to a base type (integer) value."""
@@ -228,18 +227,17 @@ def _analyze_indexed_fields(indexed_fields):
   result = {}
   for field_name in indexed_fields:
     if not isinstance(field_name, basestring):
-      raise TypeError('Field names must be strings; got %r' % (field_name,))
+      raise TypeError('Field names must be strings; got {0!r}'.format(field_name))
     if '.' not in field_name:
       if field_name in result:
-        raise ValueError('Duplicate field name %s' % field_name)
+        raise ValueError('Duplicate field name {0!s}'.format(field_name))
       result[field_name] = None
     else:
       head, tail = field_name.split('.', 1)
       if head not in result:
         result[head] = [tail]
       elif result[head] is None:
-        raise ValueError('Field name %s conflicts with ancestor %s' %
-                         (field_name, head))
+        raise ValueError('Field name {0!s} conflicts with ancestor {1!s}'.format(field_name, head))
       else:
         result[head].append(tail)
   return result
@@ -269,23 +267,22 @@ def _make_model_class(message_type, indexed_fields, **props):
   analyzed = _analyze_indexed_fields(indexed_fields)
   for field_name, sub_fields in analyzed.iteritems():
     if field_name in props:
-      raise ValueError('field name %s is reserved' % field_name)
+      raise ValueError('field name {0!s} is reserved'.format(field_name))
     try:
       field = message_type.field_by_name(field_name)
     except KeyError:
-      raise ValueError('Message type %s has no field named %s' %
-                       (message_type.__name__, field_name))
+      raise ValueError('Message type {0!s} has no field named {1!s}'.format(message_type.__name__, field_name))
     if isinstance(field, messages.MessageField):
       if not sub_fields:
         raise ValueError(
-            'MessageField %s cannot be indexed, only sub-fields' % field_name)
+            'MessageField {0!s} cannot be indexed, only sub-fields'.format(field_name))
       sub_model_class = _make_model_class(field.type, sub_fields)
       prop = model.StructuredProperty(sub_model_class, field_name,
                                       repeated=field.repeated)
     else:
       if sub_fields is not None:
         raise ValueError(
-            'Unstructured field %s cannot have indexed sub-fields' % field_name)
+            'Unstructured field {0!s} cannot have indexed sub-fields'.format(field_name))
       if isinstance(field, messages.EnumField):
         prop = EnumProperty(field.type, field_name, repeated=field.repeated)
       elif isinstance(field, messages.BytesField):
@@ -295,7 +292,7 @@ def _make_model_class(message_type, indexed_fields, **props):
         # IntegerField, FloatField, BooleanField, StringField.
         prop = model.GenericProperty(field_name, repeated=field.repeated)
     props[field_name] = prop
-  return model.MetaModel('_%s__Model' % message_type.__name__,
+  return model.MetaModel('_{0!s}__Model'.format(message_type.__name__),
                          (model.Model,), props)
 
 
@@ -344,7 +341,7 @@ class MessageProperty(model.StructuredProperty):
       protocol = _default_protocol
     self._protocol = protocol
     self._protocol_impl = _protocols_registry.lookup_by_name(protocol)
-    blob_prop = model.BlobProperty('__%s__' % self._protocol)
+    blob_prop = model.BlobProperty('__{0!s}__'.format(self._protocol))
     # TODO: Solve this without reserving 'blob_'.
     message_class = _make_model_class(message_type, self._indexed_fields,
                                       blob_=blob_prop)
@@ -380,7 +377,7 @@ class MessageProperty(model.StructuredProperty):
       # Perhaps it was written using a different protocol.
       protocol = None
       for name in _protocols_registry.names:
-        key = '__%s__' % name
+        key = '__{0!s}__'.format(name)
         if key in ent._values:
           blob = ent._values[key]
           if isinstance(blob, model._BaseValue):

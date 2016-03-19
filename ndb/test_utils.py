@@ -131,8 +131,7 @@ class NDBTest(NDBBaseTest):
       if not hasattr(self.the_module, name):
         undefined.append(name)
     self.assertFalse(undefined,
-                     '%s.__all__ has some names that are not defined: %s' %
-                     (modname, undefined))
+                     '{0!s}.__all__ has some names that are not defined: {1!s}'.format(modname, undefined))
     module_type = type(self.the_module)
     unlisted = []
     for name in dir(self.the_module):
@@ -142,8 +141,7 @@ class NDBTest(NDBBaseTest):
           if name not in self.the_module.__all__:
             unlisted.append(name)
     self.assertFalse(unlisted,
-                     '%s defines some names that are not in __all__: %s' %
-                     (modname, unlisted))
+                     '{0!s} defines some names that are not in __all__: {1!s}'.format(modname, unlisted))
 
   def HRTest(self):
     ds_stub = self.testbed.get_stub('datastore_v3')

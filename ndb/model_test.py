@@ -468,7 +468,7 @@ class ModelTests(test_utils.NDBTest):
   def assertBetween(self, x, a, b):
     '''Asserts a <= x <= b.'''
     if not a <= x <= b:
-      self.fail('%s is not between %s and %s' % (x, a, b))
+      self.fail('{0!s} is not between {1!s} and {2!s}'.format(x, a, b))
 
   def tearDown(self):
     self.assertTrue(model.Model._properties == {})
@@ -1250,8 +1250,8 @@ class ModelTests(test_utils.NDBTest):
     def my_validator(prop, value):
       value = value.lower()
       if not value.startswith('a'):
-        raise datastore_errors.BadValueError('%s does not start with "a"' %
-                                             prop._name)
+        raise datastore_errors.BadValueError('{0!s} does not start with "a"'.format(
+                                             prop._name))
       return value
 
     class MyModel(model.Model):
@@ -2370,11 +2370,10 @@ property <
     self.assertEqual(repr(small), "Biggy(blob='xyz', text=u'abc')")
     large = Biggy(blob='x' * 1500, text='a' * 1500)
     self.assertEqual(repr(large),
-                     "Biggy(blob='%s', text='%s')" % ('x' * 1500, 'a' * 1500))
+                     "Biggy(blob='{0!s}', text='{1!s}')".format('x' * 1500, 'a' * 1500))
     huge = Biggy(blob='x' * 2000, text='a' * 2000)
     self.assertEqual(repr(huge),
-                     "Biggy(blob='%s...', text='%s...')" %
-                     ('x' * 1499, 'a' * 1499))
+                     "Biggy(blob='{0!s}...', text='{1!s}...')".format('x' * 1499, 'a' * 1499))
 
   def testModelRepr_CustomRepr(self):
     # Demonstrate how to override a property's repr.
@@ -3119,11 +3118,11 @@ property <
       (test_config, db_model) = model_config(write_empty_list)
 
       for input_, output in protobuf_to_model:
-        desc = 'proto(%s) -> %s model(%s) test ' % (input_, test_config, output)
+        desc = 'proto({0!s}) -> {1!s} model({2!s}) test '.format(input_, test_config, output)
         self.RunOneEmptyListTest(True, input_, output, desc, db_model)
 
       for input_, output in model_to_protobuf:
-        desc = '%s model(%s) -> proto(%s) test ' % (input_, test_config, output)
+        desc = '{0!s} model({1!s}) -> proto({2!s}) test '.format(input_, test_config, output)
         self.RunOneEmptyListTest(False, input_, output, desc, db_model)
     finally:
       model.Property._write_empty_list = property_before
@@ -4748,9 +4747,9 @@ property <
     self.assertEqual(
         repr(y),
         'M(key=Key(\'M\', 1), ' +
-        'b=%r, ' % ('b' * 100) +
-        'l=%r, ' % Foo(name=u'joe') +
-        't=%r)' % (u't' * 100))
+        'b={0!r}, '.format(('b' * 100)) +
+        'l={0!r}, '.format(Foo(name=u'joe')) +
+        't={0!r})'.format((u't' * 100)))
 
   def testCorruption(self):
     # Thanks to Ricardo Banffy
@@ -5226,7 +5225,7 @@ class CacheTests(test_utils.NDBTest):
         return eq
 
       def __repr__(self):
-        return 'FuzzyDate(%r, %r)' % (self.first, self.last)
+        return 'FuzzyDate({0!r}, {1!r})'.format(self.first, self.last)
 
     class FuzzyDateModel(model.Model):
       first = model.DateProperty()

@@ -234,8 +234,7 @@ class EventLoop(object):
         # Yes, wait_any() may return None even for a non-empty argument.
         # But no, it won't ever return an RPC not in its argument.
         if rpc not in self.rpcs:
-          raise RuntimeError('rpc %r was not given to wait_any as a choice %r' %
-                             (rpc, self.rpcs))
+          raise RuntimeError('rpc {0!r} was not given to wait_any as a choice {1!r}'.format(rpc, self.rpcs))
         callback, args, kwds = self.rpcs[rpc]
         del self.rpcs[rpc]
         if callback is not None:

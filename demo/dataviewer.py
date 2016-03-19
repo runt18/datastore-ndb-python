@@ -78,7 +78,7 @@ class DataViewer(webapp.RequestHandler):
         results, cursor, more = query.fetch_page(page_size,
                                                  start_cursor=cursor)
       except Exception, err:
-        params['error'] = '%s error: %s.%s: %s' % (prefix,
+        params['error'] = '{0!s} error: {1!s}.{2!s}: {3!s}'.format(prefix,
                                                    err.__class__.__module__,
                                                    err.__class__.__name__,
                                                    err)
@@ -104,7 +104,7 @@ class DataViewer(webapp.RequestHandler):
           data.append('<tr>')
           columns = ['__key__'] + sorted(columns)
           for col in columns:
-            data.append('  <th>%s</th>' % cgi.escape(col))
+            data.append('  <th>{0!s}</th>'.format(cgi.escape(col)))
           data.append('</tr>')
           data.append('</thead>')
           data.append('<tbody>')
@@ -114,17 +114,17 @@ class DataViewer(webapp.RequestHandler):
               if col not in row:
                 data.append('  <td></td>')
               else:
-                data.append('  <td>%s</td>' % cgi.escape(row[col]))
+                data.append('  <td>{0!s}</td>'.format(cgi.escape(row[col])))
             data.append('</tr>')
           data.append('</tbody>')
           data.append('</table>')
           params['data'] = '\n    '.join(data)
           if more:
-            next = ('<a href=/dataviewer?%s>Next</a>' %
+            next = ('<a href=/dataviewer?{0!s}>Next</a>'.format(
                     urllib.urlencode([('query', query_string),
                                       ('cursor', cursor.to_websafe_string()),
                                       ('page', page_size),
-                                      ]))
+                                      ])))
             params['next'] = next
     self.response.out.write(FORM % params)
 

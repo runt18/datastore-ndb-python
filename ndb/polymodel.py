@@ -67,7 +67,7 @@ class _ClassKeyProperty(model.StringProperty):
 
   def _set_value(self, entity, value):
     """The class_ property is read-only from the user's perspective."""
-    raise TypeError('%s is a read-only property' % self._code_name)
+    raise TypeError('{0!s} is a read-only property'.format(self._code_name))
 
   def _get_value(self, entity):
     """Compute and store a default value if necessary."""

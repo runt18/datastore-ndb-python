@@ -195,8 +195,7 @@ class RepeatedStructuredPropertyPredicate(datastore_query.FilterPredicate):
     stripped_keys = []
     for key in match_keys:
       if not key.startswith(key_prefix):
-        raise ValueError('key %r does not begin with the specified prefix of %s'
-                         % (key, key_prefix))
+        raise ValueError('key {0!r} does not begin with the specified prefix of {1!s}'.format(key, key_prefix))
       stripped_keys.append(key[len(key_prefix):])
     value_map = datastore_query._make_key_value_map(pb, stripped_keys)
     self.match_values = tuple(value_map[key][0] for key in stripped_keys)
@@ -291,12 +290,11 @@ class Parameter(ParameterizedThing):
       key: The Parameter key, must be either an integer or a string.
     """
     if not isinstance(key, (int, long, basestring)):
-      raise TypeError('Parameter key must be an integer or string, not %s' %
-                      (key,))
+      raise TypeError('Parameter key must be an integer or string, not {0!s}'.format(key))
     self.__key = key
 
   def __repr__(self):
-    return '%s(%r)' % (self.__class__.__name__, self.__key)
+    return '{0!s}({1!r})'.format(self.__class__.__name__, self.__key)
 
   def __eq__(self, other):
     if not isinstance(other, Parameter):
@@ -312,7 +310,7 @@ class Parameter(ParameterizedThing):
     key = self.__key
     if key not in bindings:
       raise datastore_errors.BadArgumentError(
-          'Parameter :%s is not bound.' % key)
+          'Parameter :{0!s} is not bound.'.format(key))
     value = bindings[key]
     used[key] = True
     return value
@@ -336,7 +334,7 @@ class ParameterizedFunction(ParameterizedThing):
     self.__method = getattr(gqli, '_GQL' + gql_method.__name__)
 
   def __repr__(self):
-    return 'ParameterizedFunction(%r, %r)' % (self.__func, self.__values)
+    return 'ParameterizedFunction({0!r}, {1!r})'.format(self.__func, self.__values)
 
   def __eq__(self, other):
     if not isinstance(other, ParameterizedFunction):
@@ -446,11 +444,11 @@ class ParameterNode(Node):
 
   def __new__(cls, prop, op, param):
     if not isinstance(prop, model.Property):
-      raise TypeError('Expected a Property, got %r' % (prop,))
+      raise TypeError('Expected a Property, got {0!r}'.format(prop))
     if op not in _OPS:
-      raise TypeError('Expected a valid operator, got %r' % (op,))
+      raise TypeError('Expected a valid operator, got {0!r}'.format(op))
     if not isinstance(param, ParameterizedThing):
-      raise TypeError('Expected a ParameterizedThing, got %r' % (param,))
+      raise TypeError('Expected a ParameterizedThing, got {0!r}'.format(param))
     obj = super(ParameterNode, cls).__new__(cls)
     obj.__prop = prop
     obj.__op = op
@@ -458,7 +456,7 @@ class ParameterNode(Node):
     return obj
 
   def __repr__(self):
-    return 'ParameterNode(%r, %r, %r)' % (self.__prop, self.__op, self.__param)
+    return 'ParameterNode({0!r}, {1!r}, {2!r})'.format(self.__prop, self.__op, self.__param)
 
   def __eq__(self, other):
     if not isinstance(other, ParameterNode):
@@ -469,7 +467,7 @@ class ParameterNode(Node):
 
   def _to_filter(self, post=False):
     raise datastore_errors.BadArgumentError(
-        'Parameter :%s is not bound.' % (self.__param.key,))
+        'Parameter :{0!s} is not bound.'.format(self.__param.key))
 
   def resolve(self, bindings, used):
     value = self.__param.resolve(bindings, used)
@@ -506,7 +504,7 @@ class FilterNode(Node):
     return self
 
   def __repr__(self):
-    return '%s(%r, %r, %r)' % (self.__class__.__name__,
+    return '{0!s}({1!r}, {2!r}, {3!r})'.format(self.__class__.__name__,
                                self.__name, self.__opsymbol, self.__value)
 
   def __eq__(self, other):
@@ -544,7 +542,7 @@ class PostFilterNode(Node):
     return self
 
   def __repr__(self):
-    return '%s(%s)' % (self.__class__.__name__, self.predicate)
+    return '{0!s}({1!s})'.format(self.__class__.__name__, self.predicate)
 
   def __eq__(self, other):
     if not isinstance(other, PostFilterNode):
@@ -602,7 +600,7 @@ class ConjunctionNode(Node):
     return iter(self.__nodes)
 
   def __repr__(self):
-    return 'AND(%s)' % (', '.join(map(str, self.__nodes)))
+    return 'AND({0!s})'.format((', '.join(map(str, self.__nodes))))
 
   def __eq__(self, other):
     if not isinstance(other, ConjunctionNode):
@@ -663,7 +661,7 @@ class DisjunctionNode(Node):
     return iter(self.__nodes)
 
   def __repr__(self):
-    return 'OR(%s)' % (', '.join(map(str, self.__nodes)))
+    return 'OR({0!s})'.format((', '.join(map(str, self.__nodes))))
 
   def __eq__(self, other):
     if not isinstance(other, DisjunctionNode):
@@ -701,7 +699,7 @@ def _args_to_val(func, args):
     elif isinstance(arg, gql.Literal):
       val = arg.Get()
     else:
-      raise TypeError('Unexpected arg (%r)' % arg)
+      raise TypeError('Unexpected arg ({0!r})'.format(arg))
     vals.append(val)
   if func == 'nop':
     if len(vals) != 1:
@@ -739,14 +737,12 @@ def _get_prop_from_modelclass(modelclass, name):
     if issubclass(modelclass, model.Expando):
       prop = model.GenericProperty(part)
     else:
-      raise TypeError('Model %s has no property named %r' %
-                      (modelclass._get_kind(), part))
+      raise TypeError('Model {0!s} has no property named {1!r}'.format(modelclass._get_kind(), part))
 
   while more:
     part = more.pop(0)
     if not isinstance(prop, model.StructuredProperty):
-      raise TypeError('Model %s has no property named %r' %
-                      (modelclass._get_kind(), part))
+      raise TypeError('Model {0!s} has no property named {1!r}'.format(modelclass._get_kind(), part))
     maybe = getattr(prop, part, None)
     if isinstance(maybe, model.Property) and maybe._name == part:
       prop = maybe
@@ -761,8 +757,7 @@ def _get_prop_from_modelclass(modelclass, name):
           prop = model.GenericProperty()
           prop._name = name  # Bypass the restriction on dots.
         else:
-          raise KeyError('Model %s has no property named %r' %
-                         (prop._modelclass._get_kind(), part))
+          raise KeyError('Model {0!s} has no property named {1!r}'.format(prop._modelclass._get_kind(), part))
 
   return prop
 
@@ -807,7 +802,7 @@ class Query(object):
             raise TypeError('ancestor cannot be a GQL function other than KEY')
       else:
         if not isinstance(ancestor, model.Key):
-          raise TypeError('ancestor must be a Key; received %r' % (ancestor,))
+          raise TypeError('ancestor must be a Key; received {0!r}'.format(ancestor))
         if not ancestor.id():
           raise ValueError('ancestor cannot be an incomplete key')
         if app is not None:
@@ -820,12 +815,10 @@ class Query(object):
             raise TypeError('namespace/ancestor mismatch')
     if filters is not None:
       if not isinstance(filters, Node):
-        raise TypeError('filters must be a query Node or None; received %r' %
-                        (filters,))
+        raise TypeError('filters must be a query Node or None; received {0!r}'.format(filters))
     if orders is not None:
       if not isinstance(orders, datastore_query.Order):
-        raise TypeError('orders must be an Order instance or None; received %r'
-                        % (orders,))
+        raise TypeError('orders must be an Order instance or None; received {0!r}'.format(orders))
     if default_options is not None:
       if not isinstance(default_options, datastore_rpc.BaseConfiguration):
         raise TypeError('default_options must be a Configuration or None; '
@@ -853,8 +846,7 @@ class Query(object):
         raise TypeError('projection argument cannot be empty')
       if not isinstance(projection, (tuple, list)):
         raise TypeError(
-            'projection must be a tuple, list or None; received %r' %
-            (projection,))
+            'projection must be a tuple, list or None; received {0!r}'.format(projection))
       self._check_properties(self._to_property_names(projection))
       self.__projection = tuple(projection)
 
@@ -864,35 +856,35 @@ class Query(object):
         raise TypeError('group_by argument cannot be empty')
       if not isinstance(group_by, (tuple, list)):
         raise TypeError(
-            'group_by must be a tuple, list or None; received %r' % (group_by,))
+            'group_by must be a tuple, list or None; received {0!r}'.format(group_by))
       self._check_properties(self._to_property_names(group_by))
       self.__group_by = tuple(group_by)
 
   def __repr__(self):
     args = []
     if self.app is not None:
-      args.append('app=%r' % self.app)
+      args.append('app={0!r}'.format(self.app))
     if (self.namespace is not None and
         self.namespace != namespace_manager.get_namespace()):
       # Only show the namespace if set and not the current namespace.
       # (This is similar to what Key.__repr__() does.)
-      args.append('namespace=%r' % self.namespace)
+      args.append('namespace={0!r}'.format(self.namespace))
     if self.kind is not None:
-      args.append('kind=%r' % self.kind)
+      args.append('kind={0!r}'.format(self.kind))
     if self.ancestor is not None:
-      args.append('ancestor=%r' % self.ancestor)
+      args.append('ancestor={0!r}'.format(self.ancestor))
     if self.filters is not None:
-      args.append('filters=%r' % self.filters)
+      args.append('filters={0!r}'.format(self.filters))
     if self.orders is not None:
       # TODO: Format orders better.
       args.append('orders=...')  # PropertyOrder doesn't have a good repr().
     if self.projection:
-      args.append('projection=%r' % (self._to_property_names(self.projection)))
+      args.append('projection={0!r}'.format((self._to_property_names(self.projection))))
     if self.group_by:
-      args.append('group_by=%r' % (self._to_property_names(self.group_by)))
+      args.append('group_by={0!r}'.format((self._to_property_names(self.group_by))))
     if self.default_options is not None:
-      args.append('default_options=%r' % self.default_options)
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(args))
+      args.append('default_options={0!r}'.format(self.default_options))
+    return '{0!s}({1!s})'.format(self.__class__.__name__, ', '.join(args))
 
   def _fix_namespace(self):
     """Internal helper to fix the namespace.
@@ -1076,7 +1068,7 @@ class Query(object):
       preds.append(f)
     for arg in args:
       if not isinstance(arg, Node):
-        raise TypeError('Cannot filter a non-Node argument; received %r' % arg)
+        raise TypeError('Cannot filter a non-Node argument; received {0!r}'.format(arg))
       preds.append(arg)
     if not preds:
       pred = None
@@ -1427,7 +1419,7 @@ class Query(object):
         fixed.append(proj._name)
       else:
         raise TypeError(
-            'Unexpected property (%r); should be string or Property' % (proj,))
+            'Unexpected property ({0!r}); should be string or Property'.format(proj))
     return fixed
 
   def _check_properties(self, fixed, **kwargs):
@@ -1474,8 +1466,8 @@ class Query(object):
         unused.append(i)
     if unused:
       raise datastore_errors.BadArgumentError(
-          'Positional arguments %s were given but not used.' %
-          ', '.join(str(i) for i in unused))
+          'Positional arguments {0!s} were given but not used.'.format(
+          ', '.join(str(i) for i in unused)))
     return self.__class__(kind=self.kind, ancestor=ancestor,
                           filters=filters, orders=self.orders,
                           app=self.app, namespace=self.namespace,
@@ -1538,7 +1530,7 @@ def _gql(query_string, query_class=Query):
       ancestor = _args_to_val(func, args)
       continue
     if op not in _OPS:
-      raise NotImplementedError('Operation %r is not supported.' % op)
+      raise NotImplementedError('Operation {0!r} is not supported.'.format(op))
     for (func, args) in values:
       val = _args_to_val(func, args)
       prop = _get_prop_from_modelclass(modelclass, name)
@@ -1858,11 +1850,10 @@ class _MultiQuery(object):
 
   def __init__(self, subqueries):
     if not isinstance(subqueries, list):
-      raise TypeError('subqueries must be a list; received %r' % subqueries)
+      raise TypeError('subqueries must be a list; received {0!r}'.format(subqueries))
     for subq in subqueries:
       if not isinstance(subq, Query):
-        raise TypeError('Each subquery must be a Query instances; received  %r'
-                        % subq)
+        raise TypeError('Each subquery must be a Query instances; received  {0!r}'.format(subq))
     first_subquery = subqueries[0]
     kind = first_subquery.kind
     orders = first_subquery.orders
@@ -1870,11 +1861,9 @@ class _MultiQuery(object):
       raise ValueError('Subquery kind cannot be missing')
     for subq in subqueries[1:]:
       if subq.kind != kind:
-        raise ValueError('Subqueries must be for a common kind (%s != %s)' %
-                         (subq.kind, kind))
+        raise ValueError('Subqueries must be for a common kind ({0!s} != {1!s})'.format(subq.kind, kind))
       elif subq.orders != orders:
-        raise ValueError('Subqueries must have the same order(s) (%s != %s)' %
-                         (subq.orders, orders))
+        raise ValueError('Subqueries must have the same order(s) ({0!s} != {1!s})'.format(subq.orders, orders))
     # TODO: Ensure that app and namespace match, when we support them.
     self.__subqueries = subqueries
     self.__orders = orders
@@ -2058,7 +2047,7 @@ def _orders_to_orderings(orders):
   if isinstance(orders, datastore_query.CompositeOrder):
     # TODO: What about UTF-8?
     return [(pb.property(), pb.direction()) for pb in orders._to_pbs()]
-  raise ValueError('Bad order: %r' % (orders,))
+  raise ValueError('Bad order: {0!r}'.format(orders))
 
 
 def _ordering_to_order(ordering, modelclass):

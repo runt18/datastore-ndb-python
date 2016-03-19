@@ -52,10 +52,10 @@ class Flexidate(object):
 
   def __repr__(self):
     if self.__fuzz == 1:
-      return 'Flexidate<%d-%d-%d>' % (self.__date.year, self.__date.month,
+      return 'Flexidate<{0:d}-{1:d}-{2:d}>'.format(self.__date.year, self.__date.month,
                                       self.__date.day)
     else:
-      return 'Flexidate<%d-%d-%d+%d>' % (self.__date.year, self.__date.month,
+      return 'Flexidate<{0:d}-{1:d}-{2:d}+{3:d}>'.format(self.__date.year, self.__date.month,
                                          self.__date.day, self.__fuzz)
 
   @property
@@ -200,12 +200,11 @@ class FlexidateProperty(CustomProperty):
     )
 
   def __repr__(self):
-    return ('FlexidateProperty(%r, %r, %r)' %
-            (self._name, self._repeated, self._indexed))
+    return ('FlexidateProperty({0!r}, {1!r}, {2!r})'.format(self._name, self._repeated, self._indexed))
 
   def _validate(self, value):
     if not isinstance(value, Flexidate):
-      raise TypeError('expected Flexidate, got %r' % (value,))
+      raise TypeError('expected Flexidate, got {0!r}'.format(value))
 
 
 class Actor(Model):
@@ -242,19 +241,19 @@ def main():
   q = Actor.query(Actor.born.start == datetime.date(1956, 1, 1))
   print 'q =', q
   for i, res in enumerate(q):
-    print '%2d: %s' % (i, res)
+    print '{0:2d}: {1!s}'.format(i, res)
   q = Actor.query(Actor.born == Flexidate(datetime.date(1956, 1, 1), 366))
   print 'q =', q
   for i, res in enumerate(q):
-    print '%2d: %s' % (i, res)
+    print '{0:2d}: {1!s}'.format(i, res)
   q = Actor.query(Actor.born.fuzz >= 31)
   print 'q =', q
   for i, res in enumerate(q):
-    print '%2d: %s' % (i, res)
+    print '{0:2d}: {1!s}'.format(i, res)
   q = Actor.query(Actor.events.fuzz == 366)
   print 'q =', q
   for i, res in enumerate(q):
-    print '%2d: %s' % (i, res)
+    print '{0:2d}: {1!s}'.format(i, res)
 
   tb.deactivate()
 

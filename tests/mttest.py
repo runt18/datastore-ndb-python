@@ -43,7 +43,7 @@ def main():
 def one_thread(i, num):
   ##sys.stdout.write('eventloop = 0x%x\n' % id(eventloop.get_event_loop()))
   x = yield fibonacci(num)
-  sys.stdout.write('%d: %d --> %d\n' % (i, num, x))
+  sys.stdout.write('{0:d}: {1:d} --> {2:d}\n'.format(i, num, x))
 
 
 @tasklets.tasklet

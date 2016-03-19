@@ -164,7 +164,7 @@ def add_flow_exception(exc):
   """
   global _flow_exceptions
   if not isinstance(exc, type) or not issubclass(exc, Exception):
-    raise TypeError('Expected an Exception subclass, got %r' % (exc,))
+    raise TypeError('Expected an Exception subclass, got {0!r}'.format(exc))
   as_set = set(_flow_exceptions)
   as_set.add(exc)
   _flow_exceptions = tuple(as_set)
@@ -235,10 +235,10 @@ class Future(object):
   def __repr__(self):
     if self._done:
       if self._exception is not None:
-        state = 'exception %s: %s' % (self._exception.__class__.__name__,
+        state = 'exception {0!s}: {1!s}'.format(self._exception.__class__.__name__,
                                       self._exception)
       else:
-        state = 'result %r' % (self._result,)
+        state = 'result {0!r}'.format(self._result)
     else:
       state = 'pending'
     line = '?'
@@ -246,14 +246,14 @@ class Future(object):
       if 'tasklets.py' not in line:
         break
     if self._info:
-      line += ' for %s' % self._info
+      line += ' for {0!s}'.format(self._info)
     if self._geninfo:
-      line += ' %s' % self._geninfo
-    return '<%s %x created by %s; %s>' % (
+      line += ' {0!s}'.format(self._geninfo)
+    return '<{0!s} {1:x} created by {2!s}; {3!s}>'.format(
         self.__class__.__name__, id(self), line, state)
 
   def dump(self):
-    return '%s\nCreated by %s' % (self.dump_stack(),
+    return '{0!s}\nCreated by {1!s}'.format(self.dump_stack(),
                                   '\n called by '.join(self._where))
 
   def dump_stack(self):
@@ -289,7 +289,7 @@ class Future(object):
 
   def set_exception(self, exc, tb=None):
     if not isinstance(exc, BaseException):
-      raise TypeError('exc must be an Exception; received %r' % exc)
+      raise TypeError('exc must be an Exception; received {0!r}'.format(exc))
     if self._done:
       raise RuntimeError('Exception cannot be set twice.')
     self._exception = exc
@@ -323,7 +323,7 @@ class Future(object):
         logging.info('All pending Futures:\n%s', _state.dump_all_pending())
         _logging_debug('All pending Futures (verbose):\n%s',
                        _state.dump_all_pending(verbose=True))
-        self.set_exception(RuntimeError('Deadlock waiting for %s' % self))
+        self.set_exception(RuntimeError('Deadlock waiting for {0!s}'.format(self)))
 
   def get_exception(self):
     self.wait()
@@ -439,8 +439,8 @@ class Future(object):
       if isinstance(value, Future):
         # TODO: Tail recursion if the Future is already done.
         if self._next:
-          raise RuntimeError('Future has already completed yet next is %r' %
-                             self._next)
+          raise RuntimeError('Future has already completed yet next is {0!r}'.format(
+                             self._next))
         self._next = value
         self._geninfo = utils.gen_info(gen)
         _logging_debug('%s is now blocked waiting for %s', self, value)
@@ -448,7 +448,7 @@ class Future(object):
         return
       if isinstance(value, (tuple, list)):
         # Arrange for yield to return a list of results (not Futures).
-        info = 'multi-yield from %s' % utils.gen_info(gen)
+        info = 'multi-yield from {0!s}'.format(utils.gen_info(gen))
         mfut = MultiFuture(info)
         try:
           for subfuture in value:
@@ -498,7 +498,7 @@ def sleep(dt):
   Example:
     yield tasklets.sleep(0.5)  # Sleep for half a sec.
   """
-  fut = Future('sleep(%.3f)' % dt)
+  fut = Future('sleep({0:.3f})'.format(dt))
   eventloop.queue_call(dt, fut.set_result, None)
   return fut
 
@@ -604,7 +604,7 @@ class MultiFuture(Future):
       mfut.complete()
       fut = mfut
     elif not isinstance(fut, Future):
-      raise TypeError('Expected Future, received %s: %r' % (type(fut), fut))
+      raise TypeError('Expected Future, received {0!s}: {1!r}'.format(type(fut), fut))
     if self._full:
       raise RuntimeError('MultiFuture cannot add a dependent once complete.')
     self._results.append(fut)
@@ -674,7 +674,7 @@ class QueueFuture(Future):
 
   def add_dependent(self, fut):
     if not isinstance(fut, Future):
-      raise TypeError('fut must be a Future instance; received %r' % fut)
+      raise TypeError('fut must be a Future instance; received {0!r}'.format(fut))
     if self._full:
       raise RuntimeError('QueueFuture add dependent once complete.')
     if fut not in self._dependents:
@@ -825,7 +825,7 @@ class SerialQueueFuture(Future):
 
   def add_dependent(self, fut):
     if not isinstance(fut, Future):
-      raise TypeError('fut must be a Future instance; received %r' % fut)
+      raise TypeError('fut must be a Future instance; received {0!r}'.format(fut))
     if self._done:
       raise RuntimeError('SerialQueueFuture cannot add dependent '
                          'once complete.')
@@ -916,7 +916,7 @@ class ReducingFuture(Future):
 
   def _internal_add_dependent(self, fut):
     if not isinstance(fut, Future):
-      raise TypeError('fut must be a Future; received %r' % fut)
+      raise TypeError('fut must be a Future; received {0!r}'.format(fut))
     if fut not in self._dependents:
       self._dependents.add(fut)
       fut.add_callback(self._signal_dependent_done, fut)
@@ -1010,7 +1010,7 @@ def tasklet(func):
     # this I believe.)
     # pylint: disable=invalid-name
     __ndb_debug__ = utils.func_info(func)
-    fut = Future('tasklet %s' % utils.func_info(func))
+    fut = Future('tasklet {0!s}'.format(utils.func_info(func)))
     fut._context = get_context()
     try:
       result = func(*args, **kwds)
@@ -1121,8 +1121,7 @@ def make_default_context():
         id_resolver = datastore_pbs.IdResolver([datastore_app_id])
         if (datastore_project_id !=
             id_resolver.resolve_project_id(datastore_app_id)):
-          raise ValueError('App id "%s" does not match project id "%s".'
-                           % (datastore_app_id, datastore_project_id))
+          raise ValueError('App id "{0!s}" does not match project id "{1!s}".'.format(datastore_app_id, datastore_project_id))
 
     datastore_app_id = datastore_project_id or datastore_app_id
     additional_app_str = os.environ.get(_DATASTORE_ADDITIONAL_APP_IDS_ENV, '')

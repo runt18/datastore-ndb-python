@@ -132,7 +132,7 @@ def code_info(code, lineno=None):
   filename = os.path.basename(code.co_filename)
   if lineno is None:
     lineno = code.co_firstlineno
-  return '%s(%s:%s)' % (funcname, filename, lineno)
+  return '{0!s}({1!s}:{2!s})'.format(funcname, filename, lineno)
 
 
 def positional(max_pos_args):
@@ -155,8 +155,7 @@ def positional(max_pos_args):
         if max_pos_args != 1:
           plural_s = 's'
         raise TypeError(
-            '%s() takes at most %d positional argument%s (%d given)' %
-            (wrapped.__name__, max_pos_args, plural_s, len(args)))
+            '{0!s}() takes at most {1:d} positional argument{2!s} ({3:d} given)'.format(wrapped.__name__, max_pos_args, plural_s, len(args)))
       return wrapped(*args, **kwds)
     return positional_wrapper
   return positional_decorator

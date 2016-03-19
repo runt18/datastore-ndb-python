@@ -182,7 +182,7 @@ class BlobInfo(model.Model):
   def get_async(cls, blob_key, **ctx_options):
     """Async version of get()."""
     if not isinstance(blob_key, (BlobKey, basestring)):
-      raise TypeError('Expected blob key, got %r' % (blob_key,))
+      raise TypeError('Expected blob key, got {0!r}'.format(blob_key))
     if 'parent' in ctx_options:
       raise TypeError('Parent is not supported')
     return cls.get_by_id_async(str(blob_key), **ctx_options)
@@ -206,7 +206,7 @@ class BlobInfo(model.Model):
     """Async version of get_multi()."""
     for blob_key in blob_keys:
       if not isinstance(blob_key, (BlobKey, basestring)):
-        raise TypeError('Expected blob key, got %r' % (blob_key,))
+        raise TypeError('Expected blob key, got {0!r}'.format(blob_key))
     if 'parent' in ctx_options:
       raise TypeError('Parent is not supported')
     blob_key_strs = map(str, blob_keys)
@@ -273,7 +273,7 @@ def delete(blob_key, **options):
 def delete_async(blob_key, **options):
   """Async version of delete()."""
   if not isinstance(blob_key, (basestring, BlobKey)):
-    raise TypeError('Expected blob key, got %r' % (blob_key,))
+    raise TypeError('Expected blob key, got {0!r}'.format(blob_key))
   rpc = blobstore.create_rpc(**options)
   yield blobstore.delete_async(blob_key, rpc=rpc)
 
@@ -293,7 +293,7 @@ def delete_multi(blob_keys, **options):
 def delete_multi_async(blob_keys, **options):
   """Async version of delete_multi()."""
   if isinstance(blob_keys, (basestring, BlobKey)):
-    raise TypeError('Expected a list, got %r' % (blob_key,))
+    raise TypeError('Expected a list, got {0!r}'.format(blob_key))
   rpc = blobstore.create_rpc(**options)
   yield blobstore.delete_async(blob_keys, rpc=rpc)
 
@@ -366,7 +366,7 @@ def parse_blob_info(field_storage):
     value = dct.get(name, None)
     if value is None:
       raise BlobInfoParseError(
-          'Field %s has no %s.' % (field_name, name))
+          'Field {0!s} has no {1!s}.'.format(field_name, name))
     return value
 
   filename = get_value(field_storage.disposition_options, 'filename')
@@ -384,7 +384,7 @@ def parse_blob_info(field_storage):
     size = int(size)
   except (TypeError, ValueError):
     raise BlobInfoParseError(
-        '%s is not a valid value for %s size.' % (size, field_name))
+        '{0!s} is not a valid value for {1!s} size.'.format(size, field_name))
 
   try:
     creation = blobstore._parse_creation(creation_string, field_name)

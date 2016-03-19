@@ -36,7 +36,7 @@ class FuzzyDate(object):
     self.last = last or first
 
   def __repr__(self):
-    return 'FuzzyDate(%r, %r)' % (self.first, self.last)
+    return 'FuzzyDate({0!r}, {1!r})'.format(self.first, self.last)
 
 
 class FuzzyDateModel(Model):

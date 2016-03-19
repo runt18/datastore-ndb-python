@@ -208,19 +208,19 @@ class TaskletTests(test_utils.NDBTest):
     t0, t1 = log
     dt = t1 - t0
     self.assertTrue(0.08 <= dt <= 0.12,
-                    'slept too long or too short: dt=%.03f' % dt)
+                    'slept too long or too short: dt={0:.03f}'.format(dt))
 
   def testMultiFuture(self):
     @tasklets.tasklet
     def foo(dt):
       yield tasklets.sleep(dt)
-      raise tasklets.Return('foo-%s' % dt)
+      raise tasklets.Return('foo-{0!s}'.format(dt))
 
     @tasklets.tasklet
     def bar(n):
       for _ in range(n):
         yield tasklets.sleep(0.01)
-      raise tasklets.Return('bar-%d' % n)
+      raise tasklets.Return('bar-{0:d}'.format(n))
     bar5 = bar(5)
     futs = [foo(0.05), foo(0.01), foo(0.03), bar(3), bar5, bar5]
     mfut = tasklets.MultiFuture()

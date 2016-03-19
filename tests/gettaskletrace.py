@@ -41,7 +41,7 @@ def cause_problem():
     yield ctx.get(key)  # Trigger get_tasklet that does not complete...
     yield ctx.delete(key)  # ... by the time this delete_tasklet starts.
     a = yield ctx.get(key)
-    assert a is None, '%r is not None' % a
+    assert a is None, '{0!r} is not None'.format(a)
 
   problem_tasklet().check_success()
   print 'No problem yet...'

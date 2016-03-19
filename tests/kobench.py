@@ -58,7 +58,7 @@ def bench(n):
 
 def profiler(func, n):
   prof = cProfile.Profile()
-  prof = prof.runctx('%s(%d)' % (func.__name__, n), globals(), locals())
+  prof = prof.runctx('{0!s}({1:d})'.format(func.__name__, n), globals(), locals())
   stats = pstats.Stats(prof)
   stats.strip_dirs()
   stats.sort_stats('time')  # 'time', 'cumulative' or 'calls'

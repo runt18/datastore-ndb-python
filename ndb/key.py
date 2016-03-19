@@ -260,8 +260,8 @@ class Key(object):
               'Incomplete Key entry must be last')
       else:
         if not isinstance(id, (int, long, str)):
-          raise TypeError('Key id must be a string or a number; received %r' %
-                          id)
+          raise TypeError('Key id must be a string or a number; received {0!r}'.format(
+                          id))
       if isinstance(kind, type):
         kind = kind._get_kind()
       if isinstance(kind, unicode):
@@ -275,7 +275,7 @@ class Key(object):
     if parent is not None:
       if not isinstance(parent, Key):
         raise datastore_errors.BadValueError(
-            'Expected Key instance, got %r' % parent)
+            'Expected Key instance, got {0!r}'.format(parent))
       if not parent.id():
         raise datastore_errors.BadArgumentError(
             'Parent cannot have incomplete key')
@@ -332,8 +332,7 @@ class Key(object):
       tup = (kind, id_or_name)
       pairs.append(tup)
     if elem is None:
-      raise RuntimeError('Key reference has no path or elements (%r, %r, %r).'
-                         % (urlsafe, serialized, str(reference)))
+      raise RuntimeError('Key reference has no path or elements ({0!r}, {1!r}, {2!r}).'.format(urlsafe, serialized, str(reference)))
     # TODO: ensure that each element has a type and either an id or a name
     # You needn't specify app= or namespace= together with reference=,
     # serialized= or urlsafe=, but if you do, their values must match
@@ -365,15 +364,15 @@ class Key(object):
         args.append('None')
       elif isinstance(item, basestring):
         if not isinstance(item, str):
-          raise TypeError('Key item is not an 8-bit string %r' % item)
+          raise TypeError('Key item is not an 8-bit string {0!r}'.format(item))
         args.append(repr(item))
       else:
         args.append(str(item))
     if self.app() != _DefaultAppId():
-      args.append('app=%r' % self.app())
+      args.append('app={0!r}'.format(self.app()))
     if self.namespace() != _DefaultNamespace():
-      args.append('namespace=%r' % self.namespace())
-    return 'Key(%s)' % ', '.join(args)
+      args.append('namespace={0!r}'.format(self.namespace()))
+    return 'Key({0!s})'.format(', '.join(args))
 
   __str__ = __repr__
 
@@ -440,8 +439,8 @@ class Key(object):
   def __setstate__(self, state):
     """Private API used for pickling."""
     if len(state) != 1:
-      raise TypeError('Invalid state length, expected 1; received %i' %
-                      len(state))
+      raise TypeError('Invalid state length, expected 1; received {0:d}'.format(
+                      len(state)))
     kwargs = state[0]
     if not isinstance(kwargs, dict):
       raise TypeError('Key accepts a dict of keyword arguments as state; '
@@ -654,7 +653,7 @@ def _ConstructReference(cls, pairs=None, flat=None,
     if parent is not None:
       if not isinstance(parent, Key):
         raise datastore_errors.BadValueError(
-            'Expected Key instance, got %r' % parent)
+            'Expected Key instance, got {0!r}'.format(parent))
       pairs[:0] = parent.pairs()
       if app:
         if app != parent.app():
@@ -681,8 +680,7 @@ def _ConstructReference(cls, pairs=None, flat=None,
     if serialized:
       reference = _ReferenceFromSerialized(serialized)
     if not reference.path().element_size():
-      raise RuntimeError('Key reference has no path or elements (%r, %r, %r).'
-                         % (urlsafe, serialized, str(reference)))
+      raise RuntimeError('Key reference has no path or elements ({0!r}, {1!r}, {2!r}).'.format(urlsafe, serialized, str(reference)))
     # TODO: ensure that each element has a type and either an id or a name
     if not serialized:
       reference = _ReferenceFromReference(reference)
@@ -756,7 +754,7 @@ def _ReferenceFromPairs(pairs, reference=None, app=None, namespace=None):
     if t is int or t is long:
       # pylint: disable=superfluous-parens
       if not (1 <= idorname < _MAX_LONG):
-        raise ValueError('Key id number is too long; received %i' % idorname)
+        raise ValueError('Key id number is too long; received {0:d}'.format(idorname))
       elem.set_id(idorname)
     elif t is str:
       # pylint: disable=superfluous-parens
@@ -778,7 +776,7 @@ def _ReferenceFromPairs(pairs, reference=None, app=None, namespace=None):
     elif issubclass(t, (int, long)):
       # pylint: disable=superfluous-parens
       if not (1 <= idorname < _MAX_LONG):
-        raise ValueError('Key id number is too long; received %i' % idorname)
+        raise ValueError('Key id number is too long; received {0:d}'.format(idorname))
       elem.set_id(idorname)
     elif issubclass(t, basestring):
       if issubclass(t, unicode):
@@ -815,7 +813,7 @@ def _ReferenceFromReference(reference):
 def _ReferenceFromSerialized(serialized):
   """Construct a Reference from a serialized Reference."""
   if not isinstance(serialized, basestring):
-    raise TypeError('serialized must be a string; received %r' % serialized)
+    raise TypeError('serialized must be a string; received {0!r}'.format(serialized))
   elif isinstance(serialized, unicode):
     serialized = serialized.encode('utf8')
   return entity_pb.Reference(serialized)
@@ -827,7 +825,7 @@ def _DecodeUrlSafe(urlsafe):
   This returns the decoded string.
   """
   if not isinstance(urlsafe, basestring):
-    raise TypeError('urlsafe must be a string; received %r' % urlsafe)
+    raise TypeError('urlsafe must be a string; received {0!r}'.format(urlsafe))
   if isinstance(urlsafe, unicode):
     urlsafe = urlsafe.encode('utf8')
   mod = len(urlsafe) % 4

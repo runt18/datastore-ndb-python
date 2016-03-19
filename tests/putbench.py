@@ -82,7 +82,7 @@ def timer(func, people):
   t0 = time.time()
   func(people)
   t1 = time.time()
-  print '%.3f seconds' % (t1 - t0)
+  print '{0:.3f} seconds'.format((t1 - t0))
 
 
 def main(k=0):

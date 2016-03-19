@@ -145,7 +145,7 @@ def subverting_aries_fix():
   assert pb3 is not context._LOCKED, 'Received _LOCKED value'
   if pb3 is not None:
     ent3 = ctx._conn.adapter.pb_to_entity(pb3)
-    assert ent3 == ent2, 'stale value in memcache; %r != %r' % (ent3, ent2)
+    assert ent3 == ent2, 'stale value in memcache; {0!r} != {1!r}'.format(ent3, ent2)
 
   # Finally check the high-level API.
   ent4 = key.get()

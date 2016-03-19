@@ -507,8 +507,8 @@ class BaseQueryTestMixin(object):
     class Foo(model.Model):
       a = model.StringProperty()
       b = model.StringProperty()
-      c = model.ComputedProperty(lambda ent: '<%s.%s>' % (ent.a, ent.b))
-      d = model.ComputedProperty(lambda ent: '<%s>' % (ent.a,))
+      c = model.ComputedProperty(lambda ent: '<{0!s}.{1!s}>'.format(ent.a, ent.b))
+      d = model.ComputedProperty(lambda ent: '<{0!s}>'.format(ent.a))
     foo = Foo(a='a', b='b')
     foo.put()
     self.assertEqual((foo.a, foo.b, foo.c, foo.d), ('a', 'b', '<a.b>', '<a>'))
@@ -1496,8 +1496,8 @@ class BaseQueryTestMixin(object):
 
   def testGqlAncestor(self):
     key = model.Key('Foo', 42)
-    qry = query.gql("SELECT * FROM Foo WHERE ANCESTOR IS KEY('%s')" %
-                    key.urlsafe())
+    qry = query.gql("SELECT * FROM Foo WHERE ANCESTOR IS KEY('{0!s}')".format(
+                    key.urlsafe()))
     self.assertEqual(qry.kind, 'Foo')
     self.assertEqual(qry.ancestor, key)
     self.assertEqual(qry.filters, None)
@@ -1682,10 +1682,10 @@ class BaseQueryTestMixin(object):
         Bar.gql("WHERE ref = :1").bind(self.joe.key).fetch())
     self.assertEqual(
         [joeref],
-        Bar.gql("WHERE ref = KEY('%s')" % self.joe.key.urlsafe()).fetch())
+        Bar.gql("WHERE ref = KEY('{0!s}')".format(self.joe.key.urlsafe())).fetch())
     self.assertEqual(
         [joeref],
-        Bar.gql("WHERE ref = KEY('Foo', %s)" % self.joe.key.id()).fetch())
+        Bar.gql("WHERE ref = KEY('Foo', {0!s})".format(self.joe.key.id())).fetch())
     self.assertEqual(
         [joeref],
         Bar.gql("WHERE ref = KEY(:1)").bind(self.joe.key.urlsafe()).fetch())
@@ -1704,7 +1704,7 @@ class BaseQueryTestMixin(object):
     moebar.put()
     self.assertEqual(
         [joebar],
-        Bar.gql("WHERE ANCESTOR IS KEY('%s')" % self.joe.key.urlsafe()).fetch())
+        Bar.gql("WHERE ANCESTOR IS KEY('{0!s}')".format(self.joe.key.urlsafe())).fetch())
     self.assertEqual(
         [joebar],
         Bar.gql("WHERE ANCESTOR IS :1").bind(self.joe.key).fetch())
@@ -1954,7 +1954,7 @@ class BaseQueryTestMixin(object):
 
       class M(ndb.Model):
         a = ndb.IntegerProperty()
-      ms = [M(a=i, id='%04d' % i) for i in range(33)]
+      ms = [M(a=i, id='{0:04d}'.format(i)) for i in range(33)]
       ks = ndb.put_multi(ms)
       q = M.query().order(M.a)
       xs = fetch(q, 9)
